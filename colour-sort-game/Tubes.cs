@@ -7,49 +7,7 @@ using System.Threading.Tasks;
 
 namespace colour_sort_game
 {
-    internal class Program
-    {
-        static void Main(string[] args)
-        {
-            Tubes MyTubes = new Tubes();
-            MyTubes.NumberOfTubes = 7;
-            MyTubes.HeightOfTube = 6;
-            MyTubes.AmountOfColours = 5;
-            MyTubes.NumberOfEmptyTubes = 2;
-            MyTubes.CreateTubeArray();
-
-            MyTubes.TubeCheck();
-            Dictionary<int,int> MyDictionary = MyTubes.CreateColourDictionary();
-            MyTubes.PopulatingTubes(MyDictionary,MyTubes.TubeArray);
-
-            //Console.WriteLine(MyTubes.TubeArray);
-
-            while (MyTubes.CheckGameCompleted() == false)
-            {
-                MyTubes.PrintTubes(MyTubes.TubeArray);
-
-                Console.WriteLine("what tube do want to move from : ");
-                int originTube = Convert.ToInt16(Console.ReadLine());
-                Console.WriteLine("what tube do want to move to : ");
-                int finalTube = Convert.ToInt16(Console.ReadLine());
-
-                string moveItemStr = MyTubes.CheckMove(originTube, finalTube);
-                try
-                {
-                    int moveItem = Convert.ToInt32(moveItemStr);
-                    MyTubes.MakeMove(MyTubes.TubeArray[originTube - 1], MyTubes.TubeArray[finalTube - 1], MyTubes.HeightOfTube, moveItem);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(moveItemStr);
-                }
-            }
-
-            Console.ReadLine();
-        }
-    }
-
-    class Tubes
+    internal class Tubes
     {
         private int numberOfTubes;
         public int NumberOfTubes
