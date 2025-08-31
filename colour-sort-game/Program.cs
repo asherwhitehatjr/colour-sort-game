@@ -24,51 +24,28 @@ namespace colour_sort_game
 
             //Console.WriteLine(MyTubes.TubeArray);
 
-            foreach (var item in MyTubes.TubeArray)
+            while (MyTubes.CheckGameCompleted() == false)
             {
-                //Console.WriteLine(item.ToString());
-                Console.Write("[");
-                foreach (var stackitems in item)
+                MyTubes.PrintTubes(MyTubes.TubeArray);
+
+                Console.WriteLine("what tube do want to move from : ");
+                int originTube = Convert.ToInt16(Console.ReadLine());
+                Console.WriteLine("what tube do want to move to : ");
+                int finalTube = Convert.ToInt16(Console.ReadLine());
+
+                string moveItemStr = MyTubes.CheckMove(originTube, finalTube);
+                try
                 {
-                    Console.Write(stackitems);
+                    int moveItem = Convert.ToInt32(moveItemStr);
+                    MyTubes.MakeMove(MyTubes.TubeArray[originTube - 1], MyTubes.TubeArray[finalTube - 1], MyTubes.HeightOfTube, moveItem);
                 }
-                Console.WriteLine("]");
+                catch (Exception e)
+                {
+                    Console.WriteLine(moveItemStr);
+                }
             }
 
             Console.ReadLine();
-
-        }
-        static int CheckMove(Stack<int> originStack, Stack<int> finalStack, int height)
-        {
-            // Colours need to be the same between origin and final. DONE
-            // FinalStack must have space (can't have a height of over the height variable). DONE
-            // If there are multiple of the same colour in a row in origin, and space for them in final, then those multiple colours move together
-
-
-            int TopItemOrigin = originStack.Peek();
-            int TopItemFinal = finalStack.Peek();
-
-            if (finalStack.Count >= height)
-            {
-                return -1;
-            }
-
-            if (TopItemOrigin != TopItemFinal)
-            {
-                return -1;
-            }
-            return TopItemFinal;
-
-        }
-
-        static void MakeMove(Stack<int> originStack, Stack<int> finalStack, int height, int ItemToMove)
-        {
-            while (originStack.Peek() == ItemToMove && finalStack.Count < height)
-            {
-                int item = originStack.Pop();
-                finalStack.Push(item);
-            }
-
         }
     }
 
@@ -109,7 +86,65 @@ namespace colour_sort_game
             get { return tubeArray; }
             set { tubeArray = value; }
         }
-        
+
+        public string CheckMove(int originTube, int finalTube)
+        {
+            // Colours need to be the same between origin and final. DONE
+            // FinalStack must have space (can't have a height of over the height variable). DONE
+            // If there are multiple of the same colour in a row in origin, and space for them in final, then those multiple colours move together
+
+            Stack<int> originStack;
+            Stack<int> finalStack;
+
+            try
+            {
+                originStack = TubeArray[originTube - 1];
+                finalStack = TubeArray[finalTube - 1];
+            }
+            catch (Exception e)
+            {
+                return ("number is not a valid tube");
+            }
+
+            if (originStack.Count == 0)
+            {
+                return ("origin tube has no items");
+            }
+
+            int TopItemOrigin = originStack.Peek();
+
+            if (finalStack.Count >= heightOfTube)
+            {
+                return ("final tube is full");
+            }
+
+            if (finalStack.Count != 0)
+            {
+                int TopItemFinal = finalStack.Peek();
+
+                if (TopItemOrigin != TopItemFinal)
+                {
+                    return ("cannot place different valued items on each other");
+                }
+            }
+
+            return Convert.ToString(TopItemOrigin);
+        }
+
+        public void MakeMove(Stack<int> originStack, Stack<int> finalStack, int height, int ItemToMove)
+        {
+
+            while (originStack.Peek() == ItemToMove && finalStack.Count < height)
+            {
+                int item = originStack.Pop();
+                finalStack.Push(item);
+                if (originStack.Count == 0)
+                {
+                    break;
+                }
+            }
+        }
+
         public int ColourTubes()
         {
             //calculates the number of tubes that will have colours in them.
@@ -232,6 +267,47 @@ namespace colour_sort_game
                 }
             }
             return TubeArray;
+        }
+        public void PrintTubes(Stack<int>[] TubeArray)
+        {
+            foreach (var item in TubeArray)
+            {
+                //Console.WriteLine(item.ToString());
+                Console.Write("[");
+                foreach (var stackitems in item)
+                {
+                    Console.Write(stackitems);
+                }
+                Console.WriteLine("]");
+            }
+        }
+
+        public Boolean CheckGameCompleted()
+        {
+            Console.WriteLine("Running");
+            foreach (var Tube in TubeArray)
+            {
+                if (Tube.Count > 0 && Tube.Count < heightOfTube)
+                {
+                    Console.WriteLine("tube count fail : {0}",Tube.Count);
+                    return false;
+                }
+                if (Tube.Count > 0)
+                {
+                    int item = Tube.Peek();
+                    foreach (var Tubeitems in Tube)
+                    {
+                        if (Tubeitems != item)
+                        {
+                            Console.WriteLine("item fail : {0}", item);
+                            Console.WriteLine("tube item fail : {0}", Tubeitems);
+                            return false;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("game completed");
+            return true;
         }
     }
 }
